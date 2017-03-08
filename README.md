@@ -95,3 +95,7 @@ hbmenu is looking for contributors ! We're making this repository public so that
 - Fluto : graphics
 - Arkhandar : graphics
 - dotjasp : graphics (regionfree icon)
+
+#### Added in this custom version of 3ds_hb_menu
+
+- Support of the XML file when using Netloader, and though, select title before launching app if the XML file exist
