@@ -268,6 +268,8 @@ int main()
 
 	rebootCounter=257;
 
+	menuEntry_s* meNetBoot = NULL; // menuEntry for netBoot, need to save it for select title if XML exist
+
 	while(aptMainLoop())
 	{
 		if (nextSdCheck < osGetTime())
@@ -305,7 +307,6 @@ int main()
 		// 	debugValues[58] = (me->descriptor.targetTitles[0].tid >> 32) & 0xFFFFFFFF;
 		// 	debugValues[59] = me->descriptor.targetTitles[0].tid & 0xFFFFFFFF;
 		// }
-
 		if(hbmenu_state == HBMENU_NETLOADER_ACTIVE){
 			if(hidKeysDown()&KEY_B){
 				netloader_deactivate();
@@ -314,8 +315,12 @@ int main()
 				int rc = netloader_loop();
 				if(rc > 0)
 				{
+					meNetBoot = malloc(sizeof(menuEntry_s));
 					netloader_boot = true;
-					break;
+
+					hbmenu_state = HBMENU_DEFAULT;
+					initMenuEntry(meNetBoot, netloadedPath, "netloaded app", "", "", NULL, MENU_ENTRY_FILE);
+					loadDescriptorNetloaderApp(&meNetBoot->descriptor, netloadedPath);
 				}else if(rc < 0){
 					hbmenu_state = HBMENU_NETLOADER_ERROR;
 				}
@@ -351,7 +356,14 @@ int main()
 				bootSetTargetTitle(*titleBrowser.selected);
 				break;
 			}
-			else if(hidKeysDown()&KEY_B)hbmenu_state = HBMENU_DEFAULT;
+			else if(hidKeysDown()&KEY_B) {
+				hbmenu_state = HBMENU_DEFAULT;
+				if (netloader_boot) {
+					freeMenuEntry(meNetBoot);
+					free(meNetBoot);
+					netloader_boot = false;
+				}
+			}
 			else updateTitleBrowser(&titleBrowser);
 		}else if(hbmenu_state == HBMENU_NETLOADER_ERROR){
 			if(hidKeysDown()&KEY_B)
@@ -387,9 +399,12 @@ int main()
 					initMenu(&menu);
 					scanHomebrewDirectory(&menu);
 			}
-			else if(updateMenu(&menu))
+			else if(updateMenu(&menu) || netloader_boot)
 			{
 				menuEntry_s* me = getMenuEntry(&menu, menu.selectedEntry);
+				if (netloader_boot) {
+					me = meNetBoot;
+				}
 				if(me && me->type == MENU_ENTRY_FOLDER) {
 					changeDirectory(me->executablePath);
 					clearMenuEntries(&menu);
@@ -456,11 +471,8 @@ int main()
 	}
 
 	menuEntry_s* me = getMenuEntry(&menu, menu.selectedEntry);
-
-	if(netloader_boot)
-	{
-		me = malloc(sizeof(menuEntry_s));
-		initMenuEntry(me, netloadedPath, "netloaded app", "", "", NULL, MENU_ENTRY_FILE);
+	if(netloader_boot) {
+		me = meNetBoot;
 	}
 
 	scanMenuEntry(me);

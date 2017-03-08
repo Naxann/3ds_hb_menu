@@ -196,6 +196,17 @@ void addExecutableToMenu(menu_s* m, char* execPath)
 	addMenuEntryCopy(m, &tmpEntry);
 }
 
+void loadDescriptorNetloaderApp(descriptor_s* d, char* execPath) {
+	static char xmlPath[128];
+	snprintf(xmlPath, 128, "%s", execPath);
+	int l = strlen(xmlPath);
+	xmlPath[l-1] = 0;
+	xmlPath[l-2] = 'l';
+	xmlPath[l-3] = 'm';
+	xmlPath[l-4] = 'x';
+	if(fileExists(xmlPath, &sdmcArchive)) loadDescriptor(d, xmlPath);
+}
+
 void addDirectoryToMenu(menu_s* m, char* path)
 {
 	if(!m || !path)return;

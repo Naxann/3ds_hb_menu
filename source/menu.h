@@ -81,3 +81,4 @@ void initMenuEntry(menuEntry_s* me, char* execPath, char* name, char* descriptio
 int drawMenuEntry(menuEntry_s* me, gfxScreen_t screen, u16 x, u16 y, bool selected);
 
 void scanMenuEntry(menuEntry_s* me);
+void freeMenuEntry(menuEntry_s* me);

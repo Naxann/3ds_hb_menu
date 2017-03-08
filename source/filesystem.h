@@ -24,3 +24,4 @@ void printDirectory(void);
 
 //shortcut menu stuff
 void createMenuEntryShortcut(menu_s* m, shortcut_s* s);
+void loadDescriptorNetloaderApp(descriptor_s* d, char* path);
