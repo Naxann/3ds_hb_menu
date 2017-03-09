@@ -196,9 +196,10 @@ void addExecutableToMenu(menu_s* m, char* execPath)
 	addMenuEntryCopy(m, &tmpEntry);
 }
 
-void loadDescriptorNetloaderApp(descriptor_s* d, char* execPath) {
+void loadDescriptorNetloaderApp(descriptor_s* d, const char* execPath) {
 	static char xmlPath[128];
 	snprintf(xmlPath, 128, "%s", execPath);
+	xmlPath[127] = 0;
 	int l = strlen(xmlPath);
 	xmlPath[l-1] = 0;
 	xmlPath[l-2] = 'l';
